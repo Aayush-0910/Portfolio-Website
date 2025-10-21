@@ -54,6 +54,7 @@
             pointer-events: none;
             z-index: 9999;
             transition: all 0.1s ease;
+            -webkit-backdrop-filter: blur(5px);
             backdrop-filter: blur(5px);
         }
 
@@ -191,6 +192,7 @@
         .shape {
             position: absolute;
             background: var(--gradient-card);
+            -webkit-backdrop-filter: blur(10px);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.2);
             animation: float 15s ease-in-out infinite;
@@ -333,12 +335,13 @@
             transform: translateY(-3px);
             box-shadow: 0 15px 40px rgba(255, 255, 255, 0.4);
         }
-
         .btn-secondary {
             background: var(--gradient-card);
             color: white;
             border: 1px solid rgba(255, 255, 255, 0.3);
+            -webkit-backdrop-filter: blur(10px);
             backdrop-filter: blur(10px);
+        }
         }
 
         .btn-secondary:hover {
@@ -356,10 +359,9 @@
         .profile-container {
             position: relative;
             animation: slideInRight 1s ease 0.5s both;
-        }
-
         .profile-card {
             background: var(--gradient-card);
+            -webkit-backdrop-filter: blur(20px);
             backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.2);
             border-radius: 30px;
@@ -367,6 +369,8 @@
             text-align: center;
             position: relative;
             transform: perspective(1000px) rotateY(-10deg);
+            transition: all 0.3s ease;
+        }
             transition: all 0.3s ease;
         }
 
@@ -761,9 +765,6 @@
             font-size: 4rem;
             color: white;
             position: relative;
-            overflow: hidden;
-        }
-
         .project-image::before {
             content: '';
             position: absolute;
@@ -772,6 +773,10 @@
             right: 0;
             bottom: 0;
             background: rgba(0, 0, 0, 0.1);
+            -webkit-backdrop-filter: blur(1px);
+            backdrop-filter: blur(1px);
+            transition: all 0.3s ease;
+        }
             backdrop-filter: blur(1px);
             transition: all 0.3s ease;
         }
@@ -882,10 +887,6 @@
 
         .contact-info h3 {
             font-size: 2.5rem;
-            font-weight: 800;
-            margin-bottom: 2rem;
-        }
-
         .contact-item {
             display: flex;
             align-items: center;
@@ -895,6 +896,11 @@
             transition: all 0.3s ease;
             padding: 1rem;
             border-radius: 15px;
+            background: var(--gradient-card);
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
             background: var(--gradient-card);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.2);
@@ -912,14 +918,15 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background: white;
-            color: var(--primary);
-            border-radius: 50%;
-        }
-
         .contact-form {
             background: var(--gradient-card);
+            -webkit-backdrop-filter: blur(20px);
             backdrop-filter: blur(20px);
+            padding: 3rem;
+            border-radius: var(--border-radius);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: var(--shadow-lg);
+        }
             padding: 3rem;
             border-radius: var(--border-radius);
             border: 1px solid rgba(255, 255, 255, 0.2);
@@ -1668,7 +1675,7 @@
                 </div>
                 
                 <div class="contact-form">
-                    <form id="contactForm">
+                    <form id="contactForm" action="https://formspree.io/f/xqayoykq" method="POST">
                         <div class="form-group">
                             <label for="name">Full Name</label>
                             <input type="text" id="name" name="name" placeholder="Your name" required>
@@ -1857,37 +1864,55 @@
         });
 
         // Contact form handling
-        document.getElementById('contactForm').addEventListener('submit', function(e) {
+        document.getElementById('contactForm').addEventListener('submit', async function(e) {
             e.preventDefault();
-            
-            const formData = new FormData(this);
+
+            const form = this;
+            const formData = new FormData(form);
             const name = formData.get('name');
             const email = formData.get('email');
             const subject = formData.get('subject');
             const message = formData.get('message');
-            
+
             if (!name || !email || !subject || !message) {
                 alert('Please fill in all fields.');
                 return;
             }
-            
+
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!emailRegex.test(email)) {
                 alert('Please enter a valid email address.');
                 return;
             }
-            
-            const submitBtn = this.querySelector('button[type="submit"]');
+
+            const submitBtn = form.querySelector('button[type="submit"]');
             const originalText = submitBtn.innerHTML;
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
             submitBtn.disabled = true;
-            
-            setTimeout(() => {
-                alert('Thank you for your message! I\'ll get back to you soon.');
-                this.reset();
+
+            try {
+                const resp = await fetch('https://formspree.io/f/xqayoykq', {
+                    method: 'POST',
+                    headers: { 'Accept': 'application/json' },
+                    body: formData
+                });
+
+                if (resp.ok) {
+                    alert('Thank you — message sent!');
+                    form.reset();
+                } else {
+                    const data = await resp.json().catch(() => ({}));
+                    const errMsg = (data && data.error) ? data.error : 'Failed to send. Please try again later.';
+                    alert(errMsg);
+                    console.error('Formspree response error:', data);
+                }
+            } catch (err) {
+                console.error('Network error sending contact form:', err);
+                alert('Network error. Please try again later.');
+            } finally {
                 submitBtn.innerHTML = originalText;
                 submitBtn.disabled = false;
-            }, 2000);
+            }
         });
 
         // Typing animation for hero text
