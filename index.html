@@ -24,6 +24,15 @@
             --gradient-accent: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
             --gradient-hero: linear-gradient(135deg, #667eea 0%, #764ba2 40%, #f093fb 100%);
             --gradient-card: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+            /* Dark mode variables */
+            --bg-dark: #0f172a;
+            --text-dark: #f1f5f9;
+            --text-muted-dark: #cbd5e1;
+            --bg-secondary-dark: #1e293b;
+            --bg-glass-dark: rgba(15, 23, 42, 0.8);
+            --shadow-dark: 0 20px 50px rgba(0, 0, 0, 0.3);
+            --shadow-lg-dark: 0 25px 60px rgba(0, 0, 0, 0.4);
+            --gradient-card-dark: linear-gradient(135deg, rgba(30,41,59,0.8) 0%, rgba(15,23,42,0.6) 100%);
         }
 
         * {
@@ -42,6 +51,18 @@
             color: var(--text);
             overflow-x: hidden;
             background: var(--bg);
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        body.dark {
+            --bg: var(--bg-dark);
+            --text: var(--text-dark);
+            --text-muted: var(--text-muted-dark);
+            --bg-secondary: var(--bg-secondary-dark);
+            --bg-glass: var(--bg-glass-dark);
+            --shadow: var(--shadow-dark);
+            --shadow-lg: var(--shadow-lg-dark);
+            --gradient-card: var(--gradient-card-dark);
         }
 
         /* Custom Cursor */
@@ -89,7 +110,7 @@
             top: 20px;
             left: 50%;
             transform: translateX(-50%);
-            background: rgba(255, 255, 255, 0.1);
+            background: var(--bg-glass);
             backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.2);
             border-radius: 50px;
@@ -101,6 +122,12 @@
         nav.scrolled {
             background: rgba(255, 255, 255, 0.95);
             box-shadow: var(--shadow);
+            border-color: rgba(0, 0, 0, 0.1);
+        }
+
+        body.dark nav.scrolled {
+            background: rgba(15, 23, 42, 0.95);
+            border-color: rgba(255, 255, 255, 0.1);
         }
 
         .nav-container {
@@ -135,6 +162,10 @@
             overflow: hidden;
         }
 
+        body.dark .nav-links a {
+            color: var(--text-dark);
+        }
+
         .nav-links a::before {
             content: '';
             position: absolute;
@@ -154,6 +185,36 @@
         .nav-links a:hover {
             color: white;
             transform: translateY(-2px);
+        }
+
+        /* Dark Mode Toggle */
+        .dark-toggle {
+            background: none;
+            border: none;
+            color: var(--text);
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+        }
+
+        .dark-toggle:hover {
+            background: rgba(99, 102, 241, 0.1);
+            transform: scale(1.1);
+        }
+
+        body.dark .dark-toggle {
+            color: var(--text-dark);
+        }
+
+        body.dark .dark-toggle:hover {
+            background: rgba(99, 102, 241, 0.2);
         }
 
         /* Hero Section */
@@ -177,9 +238,8 @@
             animation: gridMove 20s linear infinite;
         }
 
-        @keyframes gridMove {
-            0% { transform: translate(0, 0); }
-            100% { transform: translate(50px, 50px); }
+        body.dark .hero::before {
+            filter: brightness(0.5);
         }
 
         .floating-shapes {
@@ -196,6 +256,10 @@
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.2);
             animation: float 15s ease-in-out infinite;
+        }
+
+        body.dark .shape {
+            border-color: rgba(255, 255, 255, 0.1);
         }
 
         .shape:nth-child(1) {
@@ -331,10 +395,21 @@
             box-shadow: 0 10px 30px rgba(255, 255, 255, 0.3);
         }
 
+        body.dark .btn-primary {
+            background: var(--text-dark);
+            color: var(--primary);
+            box-shadow: 0 10px 30px rgba(255, 255, 255, 0.1);
+        }
+
         .btn-primary:hover {
             transform: translateY(-3px);
             box-shadow: 0 15px 40px rgba(255, 255, 255, 0.4);
         }
+
+        body.dark .btn-primary:hover {
+            box-shadow: 0 15px 40px rgba(255, 255, 255, 0.2);
+        }
+
         .btn-secondary {
             background: var(--gradient-card);
             color: white;
@@ -342,6 +417,9 @@
             -webkit-backdrop-filter: blur(10px);
             backdrop-filter: blur(10px);
         }
+
+        body.dark .btn-secondary {
+            border-color: rgba(255, 255, 255, 0.1);
         }
 
         .btn-secondary:hover {
@@ -359,6 +437,8 @@
         .profile-container {
             position: relative;
             animation: slideInRight 1s ease 0.5s both;
+        }
+
         .profile-card {
             background: var(--gradient-card);
             -webkit-backdrop-filter: blur(20px);
@@ -371,7 +451,9 @@
             transform: perspective(1000px) rotateY(-10deg);
             transition: all 0.3s ease;
         }
-            transition: all 0.3s ease;
+
+        body.dark .profile-card {
+            border-color: rgba(255, 255, 255, 0.1);
         }
 
         .profile-card:hover {
@@ -445,6 +527,10 @@
             animation: orbit 20s linear infinite;
         }
 
+        body.dark .tech-orbit {
+            border-color: rgba(255, 255, 255, 0.05);
+        }
+
         .tech-item {
             position: absolute;
             width: 50px;
@@ -458,6 +544,10 @@
             justify-content: center;
             color: white;
             font-size: 1.5rem;
+        }
+
+        body.dark .tech-item {
+            border-color: rgba(255, 255, 255, 0.1);
         }
 
         .tech-item:nth-child(1) { top: -25px; left: calc(50% - 25px); }
@@ -536,6 +626,11 @@
                         radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.1) 0%, transparent 50%);
         }
 
+        body.dark .about::before {
+            background: radial-gradient(circle at 20% 50%, rgba(99, 102, 241, 0.05) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.05) 0%, transparent 50%);
+        }
+
         .about-content {
             display: grid;
             grid-template-columns: 1fr 1.5fr;
@@ -552,7 +647,7 @@
         }
 
         .stat-card {
-            background: white;
+            background: var(--bg);
             border-radius: var(--border-radius);
             padding: 2.5rem 2rem;
             text-align: center;
@@ -560,6 +655,10 @@
             position: relative;
             overflow: hidden;
             transition: all 0.3s ease;
+        }
+
+        body.dark .stat-card {
+            background: var(--bg-secondary);
         }
 
         .stat-card::before {
@@ -595,10 +694,18 @@
             font-size: 0.9rem;
         }
 
+        body.dark .stat-label {
+            color: var(--text-muted-dark);
+        }
+
         .about-text {
             font-size: 1.1rem;
             line-height: 1.8;
             color: var(--text-muted);
+        }
+
+        body.dark .about-text {
+            color: var(--text-muted-dark);
         }
 
         .about-text h3 {
@@ -607,6 +714,10 @@
             font-weight: 700;
             margin-bottom: 2rem;
             position: relative;
+        }
+
+        body.dark .about-text h3 {
+            color: var(--text-dark);
         }
 
         .about-text p {
@@ -629,6 +740,10 @@
             background: radial-gradient(circle at 80% 20%, rgba(99, 102, 241, 0.05) 0%, transparent 50%);
         }
 
+        body.dark .skills::before {
+            background: radial-gradient(circle at 80% 20%, rgba(99, 102, 241, 0.02) 0%, transparent 50%);
+        }
+
         .skills-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -638,7 +753,7 @@
         }
 
         .skill-card {
-            background: white;
+            background: var(--bg);
             border-radius: var(--border-radius);
             padding: 3rem 2rem;
             text-align: center;
@@ -647,6 +762,11 @@
             overflow: hidden;
             transition: all 0.3s ease;
             border: 1px solid transparent;
+        }
+
+        body.dark .skill-card {
+            background: var(--bg-secondary);
+            border-color: rgba(255, 255, 255, 0.1);
         }
 
         .skill-card::before {
@@ -691,6 +811,10 @@
             z-index: 2;
         }
 
+        body.dark .skill-card h3 {
+            color: var(--text-dark);
+        }
+
         .skill-tags {
             display: flex;
             flex-wrap: wrap;
@@ -732,6 +856,10 @@
             background: radial-gradient(circle at 20% 80%, rgba(139, 92, 246, 0.1) 0%, transparent 50%);
         }
 
+        body.dark .projects::before {
+            background: radial-gradient(circle at 20% 80%, rgba(139, 92, 246, 0.05) 0%, transparent 50%);
+        }
+
         .projects-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
@@ -741,13 +869,18 @@
         }
 
         .project-card {
-            background: white;
+            background: var(--bg);
             border-radius: var(--border-radius);
             overflow: hidden;
             box-shadow: var(--shadow);
             transition: all 0.4s ease;
             position: relative;
             border: 1px solid transparent;
+        }
+
+        body.dark .project-card {
+            background: var(--bg-secondary);
+            border-color: rgba(255, 255, 255, 0.1);
         }
 
         .project-card:hover {
@@ -765,6 +898,14 @@
             font-size: 4rem;
             color: white;
             position: relative;
+            backdrop-filter: blur(1px);
+            transition: all 0.3s ease;
+        }
+
+        body.dark .project-image {
+            filter: brightness(0.8);
+        }
+
         .project-image::before {
             content: '';
             position: absolute;
@@ -774,9 +915,6 @@
             bottom: 0;
             background: rgba(0, 0, 0, 0.1);
             -webkit-backdrop-filter: blur(1px);
-            backdrop-filter: blur(1px);
-            transition: all 0.3s ease;
-        }
             backdrop-filter: blur(1px);
             transition: all 0.3s ease;
         }
@@ -795,6 +933,10 @@
             font-weight: 700;
             color: var(--text);
             margin-bottom: 1rem;
+        }
+
+        body.dark .project-content h3 {
+            color: var(--text-dark);
         }
 
         .project-content p {
@@ -819,6 +961,12 @@
             font-weight: 500;
             border: 1px solid rgba(99, 102, 241, 0.2);
             transition: all 0.3s ease;
+        }
+
+        body.dark .tech-tag {
+            background: var(--bg-glass-dark);
+            color: var(--text-dark);
+            border-color: rgba(99, 102, 241, 0.3);
         }
 
         .tech-tag:hover {
@@ -871,6 +1019,10 @@
             animation: hexMove 30s linear infinite;
         }
 
+        body.dark .contact::before {
+            filter: brightness(0.5);
+        }
+
         @keyframes hexMove {
             0% { transform: translateY(0); }
             100% { transform: translateY(43.4px); }
@@ -887,6 +1039,9 @@
 
         .contact-info h3 {
             font-size: 2.5rem;
+            margin-bottom: 2rem;
+        }
+
         .contact-item {
             display: flex;
             align-items: center;
@@ -901,14 +1056,18 @@
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
-            background: var(--gradient-card);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+
+        body.dark .contact-item {
+            border-color: rgba(255, 255, 255, 0.1);
         }
 
         .contact-item:hover {
             transform: translateX(10px);
             background: rgba(255, 255, 255, 0.2);
+        }
+
+        body.dark .contact-item:hover {
+            background: rgba(255, 255, 255, 0.1);
         }
 
         .contact-item i {
@@ -918,6 +1077,8 @@
             display: flex;
             align-items: center;
             justify-content: center;
+        }
+
         .contact-form {
             background: var(--gradient-card);
             -webkit-backdrop-filter: blur(20px);
@@ -927,10 +1088,9 @@
             border: 1px solid rgba(255, 255, 255, 0.2);
             box-shadow: var(--shadow-lg);
         }
-            padding: 3rem;
-            border-radius: var(--border-radius);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: var(--shadow-lg);
+
+        body.dark .contact-form {
+            border-color: rgba(255, 255, 255, 0.1);
         }
 
         .form-group {
@@ -959,12 +1119,24 @@
             transition: all 0.3s ease;
         }
 
+        body.dark .form-group input,
+        body.dark .form-group textarea {
+            border-color: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-dark);
+        }
+
         .form-group input:focus,
         .form-group textarea:focus {
             outline: none;
             border-color: rgba(255, 255, 255, 0.6);
             background: rgba(255, 255, 255, 0.15);
             transform: translateY(-2px);
+        }
+
+        body.dark .form-group input:focus,
+        body.dark .form-group textarea:focus {
+            background: rgba(255, 255, 255, 0.1);
         }
 
         .form-group input::placeholder,
@@ -999,6 +1171,10 @@
             position: relative;
         }
 
+        body.dark footer {
+            background: var(--bg-dark);
+        }
+
         .footer-content {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -1014,6 +1190,16 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+        }
+
+        .footer-section p,
+        .footer-section ul li {
+            color: rgba(255,255,255,0.8);
+        }
+
+        body.dark .footer-section p,
+        body.dark .footer-section ul li {
+            color: rgba(241,245,249,0.8);
         }
 
         .social-links {
@@ -1197,6 +1383,10 @@
             border-radius: 2px;
         }
 
+        body.dark .menu-toggle span {
+            background: var(--text-dark);
+        }
+
         .menu-toggle.active span:nth-child(1) {
             transform: rotate(45deg) translate(5px, 5px);
         }
@@ -1266,6 +1456,11 @@
             .container {
                 padding: 0 1rem;
             }
+
+            /* Better touch handling on mobile */
+            .btn, .project-link, .social-link, .dark-toggle {
+                min-height: 44px; /* iOS touch target */
+            }
         }
 
         @media (max-width: 480px) {
@@ -1332,6 +1527,34 @@
             font-size: 1rem;
             opacity: 0.8;
         }
+
+        /* Glitch animation for hero title */
+        @keyframes glitch {
+            0% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+            100% { transform: translate(0); }
+        }
+
+        /* Particle float animation */
+        @keyframes particleFloat {
+            0% {
+                transform: translateY(100vh) translateX(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) translateX(var(--drift-x, 0px));
+                opacity: 0;
+            }
+        }
     </style>
 </head>
 <body>
@@ -1373,6 +1596,9 @@
                 <li><a href="#projects">Projects</a></li>
                 <li><a href="#contact">Contact</a></li>
             </ul>
+            <button id="darkToggle" class="dark-toggle" title="Toggle Dark Mode">
+                <i class="fas fa-moon"></i>
+            </button>
             <div class="menu-toggle" id="menuToggle">
                 <span></span>
                 <span></span>
@@ -1774,6 +2000,32 @@
     </button>
 
     <script>
+        // Dark Mode Toggle
+        const darkToggle = document.getElementById('darkToggle');
+        const body = document.body;
+        const toggleIcon = darkToggle.querySelector('i');
+
+        function initDarkMode() {
+            const isDark = localStorage.getItem('darkMode') === 'true';
+            if (isDark) {
+                body.classList.add('dark');
+                toggleIcon.className = 'fas fa-sun';
+            } else {
+                body.classList.remove('dark');
+                toggleIcon.className = 'fas fa-moon';
+            }
+        }
+
+        function toggleDarkMode() {
+            body.classList.toggle('dark');
+            const isDark = body.classList.contains('dark');
+            localStorage.setItem('darkMode', isDark);
+            toggleIcon.className = isDark ? 'fas fa-sun' : 'fas fa-moon';
+        }
+
+        darkToggle.addEventListener('click', toggleDarkMode);
+        initDarkMode();
+
         // Custom cursor
         const cursor = document.querySelector('.cursor');
         const cursorFollower = document.querySelector('.cursor-follower');
@@ -1805,24 +2057,43 @@
             }, 2000);
         });
 
-        // Scroll progress
-        window.addEventListener('scroll', () => {
+        // Navbar scroll effect, scroll progress, and scroll-to-top (throttled for perf)
+        let ticking = false;
+        function updateOnScroll() {
+            // Scroll progress
             const scrollProgress = document.querySelector('.scroll-progress');
             const scrollTop = document.documentElement.scrollTop;
             const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
             const scrollPercent = (scrollTop / scrollHeight);
             scrollProgress.style.transform = `scaleX(${scrollPercent})`;
-        });
 
-        // Navbar scroll effect
-        window.addEventListener('scroll', () => {
+            // Navbar
             const navbar = document.getElementById('navbar');
             if (window.scrollY > 100) {
                 navbar.classList.add('scrolled');
             } else {
                 navbar.classList.remove('scrolled');
             }
-        });
+
+            // Scroll-to-top button
+            const scrollTopBtn = document.getElementById('scrollTop');
+            if (window.scrollY > 500) {
+                scrollTopBtn.classList.add('visible');
+            } else {
+                scrollTopBtn.classList.remove('visible');
+            }
+
+            ticking = false;
+        }
+
+        function requestTick() {
+            if (!ticking) {
+                requestAnimationFrame(updateOnScroll);
+                ticking = true;
+            }
+        }
+
+        window.addEventListener('scroll', requestTick);
 
         // Mobile menu
         const menuToggle = document.getElementById('menuToggle');
@@ -1870,17 +2141,7 @@
             observer.observe(el);
         });
 
-        // Scroll to top button
         const scrollTopBtn = document.getElementById('scrollTop');
-
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > 500) {
-                scrollTopBtn.classList.add('visible');
-            } else {
-                scrollTopBtn.classList.remove('visible');
-            }
-        });
-
         scrollTopBtn.addEventListener('click', () => {
             window.scrollTo({
                 top: 0,
@@ -2030,6 +2291,7 @@
             
             for (let i = 0; i < particleCount; i++) {
                 const particle = document.createElement('div');
+                const driftX = (Math.random() * 200 - 100);
                 particle.style.cssText = `
                     position: fixed;
                     width: 3px;
@@ -2041,32 +2303,11 @@
                     animation: particleFloat ${10 + Math.random() * 20}s linear infinite;
                     left: ${Math.random() * 100}vw;
                     animation-delay: ${Math.random() * 10}s;
+                    --drift-x: ${driftX}px;
                 `;
                 document.body.appendChild(particle);
             }
         }
-
-        // Add particle animation styles
-        const particleStyle = document.createElement('style');
-        particleStyle.textContent = `
-            @keyframes particleFloat {
-                0% {
-                    transform: translateY(100vh) translateX(0);
-                    opacity: 0;
-                }
-                10% {
-                    opacity: 1;
-                }
-                90% {
-                    opacity: 1;
-                }
-                100% {
-                    transform: translateY(-100px) translateX(${Math.random() * 200 - 100}px);
-                    opacity: 0;
-                }
-            }
-        `;
-        document.head.appendChild(particleStyle);
 
         // Initialize particles
         createParticles();
@@ -2103,13 +2344,14 @@
         const statsObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting && !entry.target.animated) {
-                    const target = entry.target.textContent.includes('.') ? 
-                        parseFloat(entry.target.textContent) : 
-                        parseInt(entry.target.textContent.replace('+', ''));
+                    const targetText = entry.target.textContent;
+                    let target = targetText.includes('.') ? 
+                        parseFloat(targetText) : 
+                        parseInt(targetText.replace('+', ''));
                     
                     entry.target.animated = true;
                     
-                    if (entry.target.textContent.includes('.')) {
+                    if (targetText.includes('.')) {
                         // For GPA
                         let current = 0;
                         const timer = setInterval(() => {
@@ -2159,60 +2401,7 @@
             });
         }
 
-        // Add glitch animation
-        const glitchStyle = document.createElement('style');
-        glitchStyle.textContent = `
-            @keyframes glitch {
-                0% { transform: translate(0); }
-                20% { transform: translate(-2px, 2px); }
-                40% { transform: translate(-2px, -2px); }
-                60% { transform: translate(2px, 2px); }
-                80% { transform: translate(2px, -2px); }
-                100% { transform: translate(0); }
-            }
-        `;
-        document.head.appendChild(glitchStyle);
-
-        // Performance optimization: Throttle scroll events
-        let ticking = false;
-        function updateOnScroll() {
-            // Update scroll progress
-            const scrollProgress = document.querySelector('.scroll-progress');
-            const scrollTop = document.documentElement.scrollTop;
-            const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-            const scrollPercent = (scrollTop / scrollHeight);
-            scrollProgress.style.transform = `scaleX(${scrollPercent})`;
-
-            // Update navbar
-            const navbar = document.getElementById('navbar');
-            if (window.scrollY > 100) {
-                navbar.classList.add('scrolled');
-           
-            } else {
-                navbar.classList.remove('scrolled');
-            }
-
-            // Update scroll-to-top button
-            const scrollTopBtn = document.getElementById('scrollTop');
-            if (window.scrollY > 500) {
-                scrollTopBtn.classList.add('visible');
-            } else {
-                scrollTopBtn.classList.remove('visible');
-            }
-
-            ticking = false;
-        }
-
-        function requestTick() {
-            if (!ticking) {
-                requestAnimationFrame(updateOnScroll);
-                ticking = true;
-            }
-        }
-
-        window.addEventListener('scroll', requestTick);
-
-        // Add resize handler for mobile optimization
+        // Resize handler for mobile optimization
         window.addEventListener('resize', () => {
             if (window.innerWidth > 768) {
                 mobileMenu.classList.remove('active');
