@@ -1727,27 +1727,73 @@
                 
                 <div class="contact-form">
                     <form id="contactForm" action="https://formspree.io/f/xqayoykq" method="POST">
+                        <!-- inline status + honeypot -->
+                        <div id="formMessage" class="form-message" role="status" aria-live="polite" style="display:none"></div>
+                        <input type="text" name="_gotcha" id="_gotcha" style="display:none" autocomplete="off">
+
                         <div class="form-group">
                             <label for="name">Full Name</label>
                             <input type="text" id="name" name="name" placeholder="Your name" required>
                         </div>
+
                         <div class="form-group">
                             <label for="email">Email Address</label>
                             <input type="email" id="email" name="email" placeholder="your.email@example.com" required>
                         </div>
+
+                        <div class="form-group">
+                            <label for="phone">Phone (optional)</label>
+                            <input type="tel" id="phone" name="phone" placeholder="+91 8383860320">
+                        </div>
+
                         <div class="form-group">
                             <label for="subject">Subject</label>
                             <input type="text" id="subject" name="subject" placeholder="Project collaboration" required>
                         </div>
+
                         <div class="form-group">
                             <label for="message">Message</label>
                             <textarea id="message" name="message" rows="5" placeholder="Tell me about your project..." required></textarea>
                         </div>
+
+                        <div class="form-group">
+                            <label>Preferred contact method</label>
+                            <div style="display:flex; gap:0.8rem; flex-wrap:wrap; margin-top:0.5rem;">
+                                <label style="font-weight:600;"><input type="radio" name="contact_method" value="Email" checked> Email</label>
+                                <label style="font-weight:600;"><input type="radio" name="contact_method" value="Phone"> Phone</label>
+                                <label style="font-weight:600;"><input type="radio" name="contact_method" value="WhatsApp"> WhatsApp</label>
+                            </div>
+                            <small style="display:block; color:rgba(0,0,0,0.55); margin-top:0.35rem;">If you choose Phone/WhatsApp, please include the number above.</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="preferred_time">Best time to contact (local)</label>
+                            <input type="time" id="preferred_time" name="preferred_time">
+                        </div>
+
+                        <input type="hidden" id="timezone" name="timezone" value="">
+
+                        <div class="form-group">
+                            <label for="how_found">How did you find me?</label>
+                            <select id="how_found" name="how_found">
+                                <option value="">Select</option>
+                                <option value="LinkedIn">LinkedIn</option>
+                                <option value="GitHub">GitHub</option>
+                                <option value="Referral">Referral</option>
+                                <option value="Search">Search</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label style="font-weight:600;"><input type="checkbox" id="consent" name="consent" required> I consent to be contacted regarding this inquiry.</label>
+                        </div>
+
                         <button type="submit" class="btn btn-primary" style="width: 100%;">
                             <i class="fas fa-paper-plane"></i> Send Message
                         </button>
                     </form>
-                </div>
+                 </div>
             </div>
         </div>
     </section>
@@ -1918,20 +1964,70 @@
         (function() {
             const form = document.getElementById('contactForm');
             const msgBox = document.getElementById('formMessage');
+            const phoneInput = document.getElementById('phone');
+            const timezoneInput = document.getElementById('timezone');
+
+            // Restore draft from localStorage
+            try {
+                const draft = JSON.parse(localStorage.getItem('contactDraft') || '{}');
+                Object.keys(draft).forEach(k => {
+                    const el = form.elements[k];
+                    if (!el) return;
+                    if (el.type === 'radio') {
+                        const radios = form.querySelectorAll(`input[name="${k}"]`);
+                        radios.forEach(r => { if (r.value === draft[k]) r.checked = true; });
+                    } else el.value = draft[k];
+                });
+            } catch (e) { /* ignore */ }
+
+            // Auto-save draft
+            form.addEventListener('input', () => {
+                const data = {};
+                Array.from(form.elements).forEach(el => {
+                    if (!el.name) return;
+                    if (el.type === 'radio') {
+                        if (el.checked) data[el.name] = el.value;
+                    } else if (el.type === 'checkbox') {
+                        data[el.name] = el.checked;
+                    } else data[el.name] = el.value;
+                });
+                localStorage.setItem('contactDraft', JSON.stringify(data));
+            });
+
+            // Fill timezone
+            try { timezoneInput.value = Intl.DateTimeFormat().resolvedOptions().timeZone || ''; } catch(e) {}
+
+            // show/hide phone field depending on contact method
+            function updatePhoneVisibility() {
+                const method = form.querySelector('input[name="contact_method"]:checked').value;
+                if (method === 'Phone' || method === 'WhatsApp') {
+                    phoneInput.parentElement.style.display = '';
+                } else {
+                    phoneInput.parentElement.style.display = 'none';
+                }
+            }
+            form.querySelectorAll('input[name="contact_method"]').forEach(r => r.addEventListener('change', updatePhoneVisibility));
+            updatePhoneVisibility();
 
             form.addEventListener('submit', async function(e) {
                 e.preventDefault();
                 // honeypot
                 if (document.getElementById('_gotcha').value) return;
 
-                const formData = new FormData(form);
-                const name = formData.get('name');
-                const email = formData.get('email');
-                const subject = formData.get('subject');
-                const message = formData.get('message');
-                if (!name || !email || !subject || !message) { showMessage('Fill all fields', 'error'); return; }
+                const fd = new FormData(form);
+                const name = (fd.get('name') || '').trim();
+                const email = (fd.get('email') || '').trim();
+                const subject = (fd.get('subject') || '').trim();
+                const message = (fd.get('message') || '').trim();
+                const contactMethod = (fd.get('contact_method') || 'Email');
+                const phone = (fd.get('phone') || '').trim();
+                const consent = form.querySelector('#consent') ? form.querySelector('#consent').checked : false;
+
+                if (!name || !email || !subject || !message) { showMessage('Please complete all required fields.', 'error'); return; }
                 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                if (!emailRegex.test(email)) { showMessage('Invalid email', 'error'); return; }
+                if (!emailRegex.test(email)) { showMessage('Please enter a valid email address.', 'error'); return; }
+                if ((contactMethod === 'Phone' || contactMethod === 'WhatsApp') && !phone) { showMessage('Please provide a phone number for the selected contact method.', 'error'); return; }
+                if (!consent) { showMessage('Please consent to be contacted about this inquiry.', 'error'); return; }
 
                 const btn = form.querySelector('button[type="submit"]');
                 const original = btn.innerHTML;
@@ -1939,19 +2035,23 @@
                 btn.disabled = true;
 
                 try {
-                    const resp = await fetch(form.action, { method: 'POST', headers: { 'Accept':'application/json' }, body: formData });
+                    const resp = await fetch(form.action, { method: 'POST', headers: { 'Accept':'application/json' }, body: fd });
                     if (resp.ok) {
-                        showMessage('Thanks — message sent!', 'success');
+                        // clear draft on success
+                        localStorage.removeItem('contactDraft');
+                        const preferredTime = fd.get('preferred_time') || '';
+                        showMessage(`Thanks — message sent! Preferred contact: ${contactMethod}${preferredTime ? ' at ' + preferredTime : ''}.`, 'success');
                         confettiBurst();
                         form.reset();
+                        updatePhoneVisibility();
                     } else {
                         const data = await resp.json().catch(()=>({}));
-                        showMessage((data && data.error) ? data.error : 'Send failed', 'error');
-                        console.error('Formspree:', data);
+                        showMessage((data && data.error) ? data.error : 'Send failed. Try again later.', 'error');
+                        console.error('Formspree response:', data);
                     }
                 } catch (err) {
                     console.error(err);
-                    showMessage('Network error. Try later.', 'error');
+                    showMessage('Network error. Please try again later.', 'error');
                 } finally {
                     btn.innerHTML = original;
                     btn.disabled = false;
@@ -1959,10 +2059,12 @@
             });
 
             function showMessage(text, type='success') {
+                if (!msgBox) return alert(text);
                 msgBox.textContent = text;
                 msgBox.className = 'form-message ' + (type === 'success' ? 'success' : 'error');
                 msgBox.style.display = 'block';
-                setTimeout(()=> msgBox.style.display = 'none', 6000);
+                setTimeout(()=> { msgBox.style.opacity = '1'; }, 10);
+                setTimeout(()=> { msgBox.style.display = 'none'; msgBox.style.opacity = '0'; }, 6000);
             }
 
             // simple confetti (small, dependency-free)
