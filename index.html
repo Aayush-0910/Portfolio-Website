@@ -972,6 +972,25 @@
             color: rgba(255, 255, 255, 0.7);
         }
 
+        /* Inline form response box */
+        .form-message {
+            display: none;
+            margin: 1rem auto 1.5rem;
+            max-width: 760px;
+            z-index: 5;
+            position: relative;
+        }
+        .form-message.success {
+            background: rgba(16,185,129,0.08);
+            color: #059669;
+            border: 1px solid rgba(16,185,129,0.15);
+        }
+        .form-message.error {
+            background: rgba(239,68,68,0.06);
+            color: #ef4444;
+            border: 1px solid rgba(239,68,68,0.12);
+        }
+
         /* Footer */
         footer {
             background: #0f172a;
@@ -1648,7 +1667,10 @@
                 <h2 style="color: white;">Let's Create Together</h2>
                 <p style="color: rgba(255,255,255,0.8);">Ready to bring your ideas to life? Let's connect and build something amazing.</p>
             </div>
-            
+
+            <!-- Moved inline message box here so it sits above the contact columns -->
+            <div id="formMessage" class="form-message" role="status" aria-live="polite" style="display:none"></div>
+
             <div class="contact-content fade-in">
                 <div class="contact-info">
                     <h3>Get In Touch</h3>
@@ -1676,6 +1698,8 @@
                 </div>
                 
                 <div class="contact-form">
+                    <!-- form now without the message box (message shown above) -->
+ 
                     <form id="contactForm" action="https://formspree.io/f/xqayoykq" method="POST">
                         <div class="form-group">
                             <label for="name">Full Name</label>
@@ -1698,9 +1722,9 @@
                         </button>
                     </form>
                 </div>
-            </div>
-        </div>
-    </section>
+             </div>
+         </div>
+     </section>
 
     <!-- Footer -->
     <footer>
@@ -1864,57 +1888,71 @@
             });
         });
 
-        // Contact form handling
-        document.getElementById('contactForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
+        // Contact form handling with inline message box
+        (function() {
+            const form = document.getElementById('contactForm');
+            const msgBox = document.getElementById('formMessage');
 
-            const form = this;
-            const formData = new FormData(form);
-            const name = formData.get('name');
-            const email = formData.get('email');
-            const subject = formData.get('subject');
-            const message = formData.get('message');
-
-            if (!name || !email || !subject || !message) {
-                alert('Please fill in all fields.');
-                return;
+            function showInlineMessage(text, type = 'success') {
+                msgBox.textContent = text;
+                msgBox.className = 'form-message ' + (type === 'success' ? 'success' : 'error');
+                msgBox.style.display = 'block';
+                msgBox.style.opacity = '1';
+                // auto-hide after 6s
+                clearTimeout(msgBox._hideTimer);
+                msgBox._hideTimer = setTimeout(() => {
+                    msgBox.style.opacity = '0';
+                    setTimeout(() => msgBox.style.display = 'none', 250);
+                }, 6000);
             }
 
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailRegex.test(email)) {
-                alert('Please enter a valid email address.');
-                return;
-            }
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const fd = new FormData(form);
+                const name = (fd.get('name') || '').trim();
+                const email = (fd.get('email') || '').trim();
+                const subject = (fd.get('subject') || '').trim();
+                const message = (fd.get('message') || '').trim();
 
-            const submitBtn = form.querySelector('button[type="submit"]');
-            const originalText = submitBtn.innerHTML;
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
-            submitBtn.disabled = true;
-
-            try {
-                const resp = await fetch('https://formspree.io/f/xqayoykq', {
-                    method: 'POST',
-                    headers: { 'Accept': 'application/json' },
-                    body: formData
-                });
-
-                if (resp.ok) {
-                    alert('Thank you — message sent!');
-                    form.reset();
-                } else {
-                    const data = await resp.json().catch(() => ({}));
-                    const errMsg = (data && data.error) ? data.error : 'Failed to send. Please try again later.';
-                    alert(errMsg);
-                    console.error('Formspree response error:', data);
+                if (!name || !email || !subject || !message) {
+                    showInlineMessage('Please complete all required fields.', 'error');
+                    return;
                 }
-            } catch (err) {
-                console.error('Network error sending contact form:', err);
-                alert('Network error. Please try again later.');
-            } finally {
-                submitBtn.innerHTML = originalText;
-                submitBtn.disabled = false;
-            }
-        });
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(email)) {
+                    showInlineMessage('Please enter a valid email address.', 'error');
+                    return;
+                }
+
+                const submitBtn = form.querySelector('button[type="submit"]');
+                const originalText = submitBtn.innerHTML;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+                submitBtn.disabled = true;
+
+                try {
+                    const resp = await fetch(form.action, {
+                        method: 'POST',
+                        headers: { 'Accept': 'application/json' },
+                        body: fd
+                    });
+                    if (resp.ok) {
+                        showInlineMessage('Thanks — your message was sent. I will contact you soon!', 'success');
+                        form.reset();
+                    } else {
+                        const data = await resp.json().catch(() => ({}));
+                        const err = (data && data.error) ? data.error : 'Failed to send. Try again later.';
+                        showInlineMessage(err, 'error');
+                        console.error('Formspree error:', data);
+                    }
+                } catch (err) {
+                    console.error('Network error:', err);
+                    showInlineMessage('Network error. Please try again later.', 'error');
+                } finally {
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                }
+            });
+        })();
 
         // Typing animation for hero text
         function typeWriter(element, text, speed = 80) {
@@ -2149,6 +2187,7 @@
             const navbar = document.getElementById('navbar');
             if (window.scrollY > 100) {
                 navbar.classList.add('scrolled');
+           
             } else {
                 navbar.classList.remove('scrolled');
             }
