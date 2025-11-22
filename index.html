@@ -920,6 +920,58 @@
             margin: 0 auto;
         }
 
+        .project-filters {
+            margin-top: var(--space-32);
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: var(--space-16);
+        }
+
+        #projectSearch {
+            padding: var(--space-12) var(--space-20);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-full);
+            background: var(--color-surface);
+            color: var(--color-text);
+            font-size: var(--font-size-base);
+            width: 100%;
+            max-width: 400px;
+            outline: none;
+            transition: all var(--duration-fast);
+        }
+
+        #projectSearch:focus {
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px rgba(33, 128, 141, 0.1);
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: var(--space-8);
+            background: var(--color-surface);
+            padding: var(--space-4);
+            border-radius: var(--radius-full);
+            border: 1px solid var(--color-border);
+        }
+
+        .filter-btn {
+            padding: var(--space-8) var(--space-20);
+            border: none;
+            background: transparent;
+            color: var(--color-text-secondary);
+            font-weight: var(--font-weight-medium);
+            cursor: pointer;
+            border-radius: var(--radius-full);
+            transition: all var(--duration-fast);
+        }
+
+        .filter-btn.active,
+        .filter-btn:hover {
+            background: var(--color-primary);
+            color: white;
+        }
+
         /* About Section */
         .about {
             background: var(--color-surface);
@@ -1172,6 +1224,13 @@
             transition: all var(--duration-slow) var(--ease-standard);
             position: relative;
             cursor: pointer;
+            transform-style: preserve-3d;
+            perspective: 1000px;
+        }
+
+        .project-card:hover {
+            transform: translateY(-16px) scale(1.02) rotateX(5deg) rotateY(-5deg);
+            box-shadow: 0 25px 70px rgba(50, 184, 198, 0.35);
         }
 
         .project-card:hover .project-overlay {
@@ -1997,6 +2056,28 @@
             50% { opacity: 0.3; }
         }
 
+        /* Loading Screen */
+        #loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--color-background);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            transition: opacity 0.5s;
+        }
+
+        #loading-screen .spinner {
+            width: 50px;
+            height: 50px;
+            border-width: 5px;
+            border-top-color: var(--color-primary);
+        }
+
         /* Confetti Celebration Effect */
         .confetti {
             position: fixed;
@@ -2760,6 +2841,11 @@
     </style>
 </head>
 <body>
+    <!-- Loading Screen -->
+    <div id="loading-screen">
+        <div class="spinner"></div>
+    </div>
+
     <!-- Scroll Progress Bar -->
     <div class="scroll-progress" id="scrollProgress"></div>
 
@@ -2831,7 +2917,8 @@
             </ul>
             <div class="nav-actions">
                 <button id="darkToggle" class="dark-toggle" aria-label="Toggle dark mode">
-                    <i class="fas fa-moon"></i>
+                    <i class="fas fa-moon" id="moon-icon"></i>
+                    <i class="fas fa-sun" id="sun-icon" style="display: none;"></i>
                 </button>
                 <div class="menu-toggle" id="menuToggle">
                     <span></span>
@@ -2852,7 +2939,7 @@
                     <i class="fas fa-circle" style="font-size: 8px;"></i>
                     Available for new opportunities
                 </div>
-                <h1>Hi, I'm <span class="highlight">Aayush Sinha</span></h1>
+                <h1>Hi, I'm <span class="highlight">Aayush Sinha</span>, <span id="hero-typing"></span></h1>
                 <p class="hero-description">Full Stack Developer crafting modern, responsive web experiences with cutting-edge technologies. Currently specializing in <span class="typing-animation" id="typingText">React.js</span> and building user-centric applications.</p>
                 <div class="hero-actions">
                     <a href="#projects" class="btn btn-primary">
@@ -3025,6 +3112,15 @@
                 </div>
                 <h2>Featured Projects</h2>
                 <p>A showcase of my recent work and technical achievements</p>
+                <div class="project-filters">
+                    <input type="text" id="projectSearch" placeholder="Search projects...">
+                    <div class="filter-buttons">
+                        <button class="filter-btn active" data-filter="all">All</button>
+                        <button class="filter-btn" data-filter="react">React.js</button>
+                        <button class="filter-btn" data-filter="python">Python</button>
+                        <button class="filter-btn" data-filter="javascript">JavaScript</button>
+                    </div>
+                </div>
             </div>
             <div class="projects-grid fade-in">
                 <div class="project-card" onclick="openProjectModal('weather')">
@@ -3057,10 +3153,10 @@
                             <span class="tech-tag">Weather API</span>
                         </div>
                         <div class="project-links">
-                            <a href="https://github.com/Aayush-0910/Weather-app" class="project-link" target="_blank" rel="noopener noreferrer">
+                            <a href="https://github.com/Aayush-0910/Weather-app" class="project-link" target="_blank" rel="noopener noreferrer" aria-label="View Weather & AQI Dashboard source code on GitHub">
                                 <i class="fab fa-github"></i> <span>Code</span>
                             </a>
-                            <a href="https://weather-web-app-flax.vercel.app/" class="project-link" target="_blank" rel="noopener noreferrer">
+                            <a href="https://weather-web-app-flax.vercel.app/" class="project-link" target="_blank" rel="noopener noreferrer" aria-label="View live demo of Weather & AQI Dashboard">
                                 <i class="fas fa-external-link-alt"></i> <span>Live Demo</span>
                             </a>
                         </div>
@@ -3079,7 +3175,7 @@
                             <span class="tech-tag">Context API</span>
                         </div>
                         <div class="project-links">
-                            <a href="https://github.com/Aayush-0910" class="project-link" target="_blank" rel="noopener noreferrer">
+                            <a href="https://github.com/Aayush-0910" class="project-link" target="_blank" rel="noopener noreferrer" aria-label="View Authentication & Productivity App source code on GitHub">
                                 <i class="fab fa-github"></i> <span>Code</span>
                             </a>
                         </div>
@@ -3255,7 +3351,7 @@
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2025 Aayush Sinha. All rights reserved.</p>
+                <p>&copy; <span id="year"></span> Aayush Sinha. All rights reserved.</p>
             </div>
         </div>
     </footer>
@@ -3265,11 +3361,22 @@
         <div class="chatbot-header">
             <div class="chatbot-header-content">
                 <i class="fas fa-robot"></i>
-                <span>Ask About My Projects!</span>
+                <span>Ask Me Anything!</span>
             </div>
-            <button class="chatbot-minimize" onclick="toggleChatbot()">
-                <i class="fas fa-minus"></i>
-            </button>
+            <div class="chatbot-header-actions">
+                <button class="chatbot-btn" onclick="window.open('chatbot.js', '_blank')" title="View Source">
+                    <i class="fas fa-code"></i>
+                </button>
+                <button class="chatbot-btn" onclick="clearChat()">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
+                <button class="chatbot-btn" onclick="toggleChatbot()">
+                    <i class="fas fa-minus"></i>
+                </button>
+                <button class="chatbot-btn" onclick="closeChatbot()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
         </div>
         <div class="chatbot-body" id="chatbotBody">
             <div class="chatbot-message bot-message">
@@ -3277,7 +3384,7 @@
                     <i class="fas fa-robot"></i>
                 </div>
                 <div class="message-content">
-                    <p>Hi! 👋 I'm here to help you learn more about Aayush's projects and skills. What would you like to know?</p>
+                    <p>Hi! 👋 I'm a bot here to help you learn about Aayush's projects and skills. You can ask me things like:<br><br>• 'Tell me about his projects'<br>• 'What are his skills?'<br>• 'How can I contact him?'<br><br>I can even answer questions about specific projects!</p>
                     <div class="quick-replies">
                         <button class="quick-reply" onclick="sendQuickReply('Tell me about projects')">Projects</button>
                         <button class="quick-reply" onclick="sendQuickReply('What are your skills?')">Skills</button>
@@ -3313,7 +3420,8 @@
     <script>
         // Dark Mode Toggle
         const darkToggle = document.getElementById('darkToggle');
-        const toggleIcon = darkToggle.querySelector('i');
+        const moonIcon = document.getElementById('moon-icon');
+        const sunIcon = document.getElementById('sun-icon');
 
         function initDarkMode() {
             const savedTheme = localStorage.getItem('theme') || 'light';
@@ -3322,10 +3430,12 @@
             
             if (isDark) {
                 document.documentElement.setAttribute('data-theme', 'dark');
-                toggleIcon.className = 'fas fa-sun';
+                moonIcon.style.display = 'none';
+                sunIcon.style.display = 'inline-block';
             } else {
                 document.documentElement.removeAttribute('data-theme');
-                toggleIcon.className = 'fas fa-moon';
+                moonIcon.style.display = 'inline-block';
+                sunIcon.style.display = 'none';
             }
         }
 
@@ -3335,11 +3445,13 @@
             if (isDark) {
                 document.documentElement.removeAttribute('data-theme');
                 localStorage.setItem('theme', 'light');
-                toggleIcon.className = 'fas fa-moon';
+                moonIcon.style.display = 'inline-block';
+                sunIcon.style.display = 'none';
             } else {
                 document.documentElement.setAttribute('data-theme', 'dark');
                 localStorage.setItem('theme', 'dark');
-                toggleIcon.className = 'fas fa-sun';
+                moonIcon.style.display = 'none';
+                sunIcon.style.display = 'inline-block';
             }
         }
 
@@ -3532,6 +3644,40 @@
         }
 
         setTimeout(typeAnimation, 1000);
+
+        // Hero title typing animation
+        const heroTyping = document.getElementById('hero-typing');
+        const heroTitles = ['a Full Stack Developer', 'a React.js Specialist', 'a Python Enthusiast'];
+        let heroTitleIndex = 0;
+        let heroCharIndex = 0;
+        let heroIsDeleting = false;
+
+        function heroTypeAnimation() {
+            const currentTitle = heroTitles[heroTitleIndex];
+            
+            if (heroIsDeleting) {
+                heroTyping.textContent = currentTitle.substring(0, heroCharIndex - 1);
+                heroCharIndex--;
+            } else {
+                heroTyping.textContent = currentTitle.substring(0, heroCharIndex + 1);
+                heroCharIndex++;
+            }
+
+            if (!heroIsDeleting && heroCharIndex === currentTitle.length) {
+                setTimeout(() => { heroIsDeleting = true; }, 2000);
+            } else if (heroIsDeleting && heroCharIndex === 0) {
+                heroIsDeleting = false;
+                heroTitleIndex = (heroTitleIndex + 1) % heroTitles.length;
+            }
+
+            const speed = heroIsDeleting ? 100 : 150;
+            setTimeout(heroTypeAnimation, speed);
+        }
+
+        setTimeout(heroTypeAnimation, 2000);
+
+        // Dynamic year in footer
+        document.getElementById('year').textContent = new Date().getFullYear();
 
         // Create particles
         function createParticles() {
@@ -4037,6 +4183,50 @@
         // Initialize all features
         updateScrollProgress();
         updateBreadcrumbs();
+
+        // Hide loading screen
+        window.addEventListener('load', () => {
+            const loadingScreen = document.getElementById('loading-screen');
+            loadingScreen.style.opacity = '0';
+            setTimeout(() => {
+                loadingScreen.style.display = 'none';
+            }, 500);
+        });
+
+        // Project filtering and searching
+        const projectSearch = document.getElementById('projectSearch');
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        const projectCards = document.querySelectorAll('.project-card');
+
+        function filterProjects() {
+            const searchTerm = projectSearch.value.toLowerCase();
+            const activeFilter = document.querySelector('.filter-btn.active').dataset.filter;
+
+            projectCards.forEach(card => {
+                const title = card.querySelector('h3').textContent.toLowerCase();
+                const description = card.querySelector('p').textContent.toLowerCase();
+                const techTags = Array.from(card.querySelectorAll('.tech-tag')).map(tag => tag.textContent.toLowerCase());
+
+                const searchMatch = title.includes(searchTerm) || description.includes(searchTerm);
+                const filterMatch = activeFilter === 'all' || techTags.includes(activeFilter);
+
+                if (searchMatch && filterMatch) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        projectSearch.addEventListener('input', filterProjects);
+
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                filterBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                filterProjects();
+            });
+        });
     </script>
 </body>
 </html>
