@@ -2615,11 +2615,16 @@
             font-size: var(--font-size-sm);
             outline: none;
             transition: all var(--duration-fast);
+            text-indent: 5px;
         }
 
         .chatbot-input input:focus {
             border-color: var(--color-primary);
             box-shadow: 0 0 0 3px rgba(33, 128, 141, 0.1);
+        }
+
+        .chatbot-input input::placeholder {
+            text-indent: 5px;
         }
 
         .send-btn {
@@ -3364,16 +3369,13 @@
                 <span>Ask Me Anything!</span>
             </div>
             <div class="chatbot-header-actions">
-                <button class="chatbot-btn" onclick="window.open('chatbot.js', '_blank')" title="View Source">
-                    <i class="fas fa-code"></i>
-                </button>
-                <button class="chatbot-btn" onclick="clearChat()">
+                <button class="chatbot-btn" onclick="clearChat()" title="Clear Chat">
                     <i class="fas fa-sync-alt"></i>
                 </button>
-                <button class="chatbot-btn" onclick="toggleChatbot()">
+                <button class="chatbot-btn" onclick="toggleChatbot()" title="Minimize">
                     <i class="fas fa-minus"></i>
                 </button>
-                <button class="chatbot-btn" onclick="closeChatbot()">
+                <button class="chatbot-btn" onclick="closeChatbot()" title="Close">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
@@ -4023,23 +4025,23 @@
         const chatbotKnowledge = {
             projects: {
                 keywords: ['project', 'work', 'portfolio', 'built', 'created', 'developed'],
-                response: "Aayush has worked on several impressive projects including:\n\n🌤️ Weather & AQI Dashboard - Real-time weather and air quality data with interactive visualizations\n🔐 Authentication & Productivity App - Full-featured app with task management\n📊 Sales Analytics System - Python-based tracking with data visualizations\n💰 Expense Tracker - Financial management application\n🎮 Interactive Games Portfolio - Collection of web-based games\n\nWould you like to know more about any specific project?"
+                response: "Aayush has worked on several impressive projects including:\n\n🌤️ Weather & AQI Dashboard - Real-time weather and air quality data with interactive visualizations\n🔐 Authentication & Productivity App - Full-featured app with task management\n📊 Sales Analytics System - Python-based tracking with data visualizations\n💰 Expense Tracker - Financial management application\n🎮 Interactive Games Portfolio - Collection of web-based games\n\nWould you like to know more about any specific project? Just ask about the project name!"
             },
             skills: {
                 keywords: ['skill', 'technology', 'tech', 'know', 'language', 'framework'],
-                response: "Aayush is proficient in:\n\n💻 Frontend: React.js, JavaScript, HTML5, CSS3, Bootstrap, Tailwind CSS\n🎨 UI/UX: Responsive Design, Modern Web Design\n⚙️ Backend: Python, MongoDB, Firebase, Fast APIs\n🛠️ Tools: VS Code, Git, GitHub, Netlify, Vercel\n\nHe specializes in creating modern, responsive web applications with cutting-edge technologies!"
+                response: "Aayush is proficient in a variety of technologies, including:\n\n💻 Frontend: React.js, JavaScript, HTML5, CSS3, Bootstrap, Tailwind CSS\n🎨 UI/UX: Responsive Design, Modern Web Design\n⚙️ Backend: Python, MongoDB, Firebase, Fast APIs\n🛠️ Tools: VS Code, Git, GitHub, Netlify, Vercel\n\nHe's always excited to learn new things!"
             },
             contact: {
                 keywords: ['contact', 'email', 'phone', 'reach', 'connect', 'hire'],
-                response: "You can reach Aayush through:\n\n📧 Email: sinhaaayush2001@gmail.com\n📱 Phone: +91 8383860320\n📍 Location: Delhi, India\n💼 LinkedIn: Available on the website\n🐱 GitHub: github.com/Aayush-0910\n\nFeel free to reach out for collaborations or opportunities!"
+                response: "You can reach Aayush through:\n\n📧 Email: sinhaaayush2001@gmail.com\n📱 Phone: +91 8383860320\n📍 Location: Delhi, India\n\nFeel free to reach out for collaborations or opportunities!"
             },
             about: {
                 keywords: ['about', 'who', 'background', 'education', 'experience'],
-                response: "Aayush Sinha is a Software Engineer who graduated with a Bachelor's in Computer Science Engineering from SRM Institute of Science & Technology in 2025.\n\n🎓 CGPA: 7.08\n💼 Current: Frontend Development Intern at Aagati Serve\n🏆 5+ Certifications\n📚 6+ Projects completed\n\nHe's passionate about creating responsive, user-centric web applications and constantly learning new technologies!"
+                response: "Aayush Sinha is a Software Engineer who graduated with a Bachelor's in Computer Science Engineering from SRM Institute of Science & Technology in 2025.\n\nHe's passionate about creating responsive, user-centric web applications and constantly learning new technologies!"
             },
             default: {
                 keywords: [],
-                response: "I'm here to help you learn more about Aayush! You can ask me about:\n\n• His projects and work\n• Technical skills and expertise\n• Contact information\n• Background and education\n\nWhat would you like to know?"
+                response: "I'm sorry, I didn't quite understand that. You can ask me about Aayush's projects, skills, or contact information."
             }
         };
 
@@ -4171,6 +4173,30 @@
             }
             
             return chatbotKnowledge.default.response;
+        }
+
+        function closeChatbot() {
+            const container = document.getElementById('chatbotContainer');
+            container.classList.remove('active');
+        }
+
+        function clearChat() {
+            const chatBody = document.getElementById('chatbotBody');
+            chatBody.innerHTML = `
+                <div class="chatbot-message bot-message">
+                    <div class="message-avatar">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div class="message-content">
+                        <p>Hi! 👋 I'm a bot here to help you learn about Aayush's projects and skills. You can ask me things like:<br><br>• 'Tell me about his projects'<br>• 'What are his skills?'<br>• 'How can I contact him?'<br><br>I can even answer questions about specific projects!</p>
+                        <div class="quick-replies">
+                            <button class="quick-reply" onclick="sendQuickReply('Tell me about projects')">Projects</button>
+                            <button class="quick-reply" onclick="sendQuickReply('What are your skills?')">Skills</button>
+                            <button class="quick-reply" onclick="sendQuickReply('Contact information')">Contact</button>
+                        </div>
+                    </div>
+                </div>
+            `;
         }
 
         // Resize handler
